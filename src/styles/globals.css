@@ -1,0 +1,552 @@
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap");
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+
+/* Force permanent dark mode: every `dark:` utility is always active. */
+@custom-variant dark (&);
+
+@layer base {
+  :root {
+    /* ── Palette ──────────────────────────────────────────────────
+       Two brand colours, chosen to sit on well-known ramps rather than
+       as one-off hex values, so every tint and shade is already
+       designed, accessible and consistent:
+
+         PRIMARY    Tailwind `blue`.   blue-800 #1E40AF is the closest
+                    popular match to the requested #0229B6 — hue 226 vs
+                    227, essentially the same colour with the industry
+                    ramp behind it.
+         SECONDARY  Tailwind `purple`. purple-500 #A855F7 is a near
+                    exact match for the requested #A541FB (hue 271 vs
+                    272, lightness 65% vs 62%).
+
+       Neither brand shade is the UI accent directly. #1E40AF at 40%
+       lightness on a near-black page fails contrast for body links and
+       disappears in glows, so the accent is the same family lifted to
+       blue-500 — recognisably the brand, legible on dark. The exact
+       brand shades stay available as --primary-800 / --secondary-500.
+    */
+    --primary: 217 91% 60%; /* blue-500, the on-dark accent */
+    --primary-foreground: 226 57% 8%;
+    --secondary: 271 91% 65%; /* purple-500, the brand shade itself */
+    --secondary-foreground: 274 87% 8%;
+
+    /* `--accent` is the token the whole UI already reads from, so it
+       aliases primary rather than every component being rewritten.
+       Swapping the site's lead colour is a one-line change here. */
+    --accent: var(--primary);
+    --accent-foreground: var(--primary-foreground);
+
+    /* Neutrals pulled onto the primary's hue so the greys read as part
+       of the same family, not a separate cool-grey scheme. */
+    --background: 228 45% 7%;
+    --foreground: 213 20% 96%;
+    --border: 226 22% 20%;
+    --muted: 226 30% 12%;
+    --muted-foreground: 219 14% 68%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Primary ramp — Tailwind blue. 800 is the requested brand shade. */
+    --primary-50: #eff6ff;
+    --primary-100: #dbeafe;
+    --primary-200: #bfdbfe;
+    --primary-300: #93c5fd;
+    --primary-400: #60a5fa;
+    --primary-500: #3b82f6;
+    --primary-600: #2563eb;
+    --primary-700: #1d4ed8;
+    --primary-800: #1e40af;
+    --primary-900: #1e3a8a;
+    --primary-950: #172554;
+
+    /* Secondary ramp — Tailwind purple. 500 is the requested shade. */
+    --secondary-50: #faf5ff;
+    --secondary-100: #f3e8ff;
+    --secondary-200: #e9d5ff;
+    --secondary-300: #d8b4fe;
+    --secondary-400: #c084fc;
+    --secondary-500: #a855f7;
+    --secondary-600: #9333ea;
+    --secondary-700: #7e22ce;
+    --secondary-800: #6b21a8;
+    --secondary-900: #581c87;
+    --secondary-950: #3b0764;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground relative min-h-screen;
+  }
+
+  /* Tailwind v4 no longer sets `cursor: pointer` on buttons in Preflight.
+     Restore the pointer cursor for buttons and role="button" elements. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Editorial fonts for the About section */
+.font-grotesk {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+}
+.font-instrument {
+  font-family: "Instrument Serif", Georgia, serif;
+}
+
+/* About section decorative animations */
+@keyframes about-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+@keyframes about-draw-line {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Service circles — continuously rotating accent gradient ring */
+@property --svc-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes svc-spin {
+  to {
+    --svc-angle: 360deg;
+  }
+}
+.service-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--svc-angle),
+    transparent 0deg,
+    hsl(var(--accent)) 70deg,
+    transparent 160deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: svc-spin 5s linear infinite;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.service-ring:hover::before {
+  opacity: 1;
+}
+
+/* Service circles — CSS float so it runs continuously (immune to React re-renders) */
+@keyframes svc-float-down {
+  0%,
+  100% {
+    transform: translateY(12px);
+  }
+  50% {
+    transform: translateY(24px);
+  }
+}
+@keyframes svc-float-up {
+  0%,
+  100% {
+    transform: translateY(-12px);
+  }
+  50% {
+    transform: translateY(-24px);
+  }
+}
+.svc-float-down {
+  animation: svc-float-down 4.5s ease-in-out infinite;
+}
+.svc-float-up {
+  animation: svc-float-up 4.5s ease-in-out infinite;
+}
+
+/* Skill card: gradient border that fades out toward the bottom (no bottom border) */
+.skill-card-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    hsl(var(--border) / 0.9),
+    hsl(var(--border) / 0.25) 55%,
+    transparent 90%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+.skill-card-border:hover::before {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--accent) / 0.75),
+    hsl(var(--accent) / 0.25) 55%,
+    transparent 90%
+  );
+}
+.skill-card-border-active::before {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--accent) / 0.9),
+    hsl(var(--accent) / 0.35) 55%,
+    transparent 90%
+  );
+}
+
+/* Recent Works — 3D coverflow slider */
+.recent-works .swiper {
+  overflow: visible;
+  padding-bottom: 4px;
+}
+.recent-works .swiper-slide {
+  transition:
+    opacity 0.45s ease,
+    filter 0.45s ease;
+}
+.recent-works .swiper-slide:not(.swiper-slide-active) .work-card {
+  opacity: 0.45;
+  filter: saturate(0.8) brightness(0.85);
+}
+.recent-works .swiper-slide-active .work-card {
+  transform: scale(1.03);
+  border-color: hsl(var(--accent) / 0.9);
+  box-shadow:
+    0 0 0 1px hsl(var(--accent) / 0.7),
+    0 0 60px -12px hsl(var(--accent) / 0.55),
+    0 30px 80px -24px hsl(var(--accent) / 0.65);
+}
+
+/* Hero avatar ring — CSS spin so it starts instantly on load (no JS/hydration delay) */
+@keyframes avatar-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.avatar-ring-spin {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: avatar-ring-spin 24s linear infinite;
+}
+
+/* Contact social nodes — hover lift + glow */
+.social-node {
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.3s ease;
+}
+.social-node:hover {
+  transform: translateY(-4px) scale(1.08);
+  filter: drop-shadow(0 8px 18px hsl(var(--accent) / 0.45));
+}
+
+/* Subtle vertical pinstripe texture */
+.about-pinstripe {
+  background-image: repeating-linear-gradient(
+    90deg,
+    hsl(var(--foreground) / 0.018) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+/* Mesh gradient background blobs */
+.mesh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mesh-bg::before,
+.mesh-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.mesh-bg::before {
+  width: 500px;
+  height: 500px;
+  top: -10%;
+  left: -5%;
+  background: radial-gradient(
+    circle,
+    hsl(268 80% 70% / 0.5),
+    hsl(200 80% 70% / 0.3),
+    transparent 70%
+  );
+}
+
+.mesh-bg::after {
+  width: 400px;
+  height: 400px;
+  top: -5%;
+  right: -5%;
+  background: radial-gradient(
+    circle,
+    hsl(140 60% 70% / 0.4),
+    hsl(60 80% 75% / 0.3),
+    transparent 70%
+  );
+}
+
+.mesh-blob-1 {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  bottom: 30%;
+  right: 10%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    hsl(268 70% 75% / 0.3),
+    hsl(320 60% 75% / 0.2),
+    transparent 70%
+  );
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.mesh-blob-2 {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  bottom: 5%;
+  left: 5%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    hsl(200 70% 75% / 0.35),
+    hsl(170 60% 70% / 0.2),
+    transparent 70%
+  );
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Hide the scrollbar on horizontal snap rows (the product gallery)
+   without disabling scrolling. Not a stock Tailwind utility and no
+   scrollbar plugin is installed, so `scrollbar-none` would silently do
+   nothing and leave a bar across the screenshots. */
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge */
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+/* Always-on version of the rotating accent ring, for the hero's brand
+   mark. `.service-ring` is hover-only by design (it belongs to the
+   service cards), so reusing it there rendered nothing at rest — the
+   mark just sat as a bare square. `border-radius: inherit` means this
+   follows whatever corner radius the element has, so it traces the
+   app-tile's rounded square rather than forcing a circle. */
+.brand-ring {
+  position: relative;
+}
+.brand-ring::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--svc-angle),
+    transparent 0deg,
+    hsl(var(--accent)) 80deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: svc-spin 6s linear infinite;
+  pointer-events: none;
+}
+
+/* Respect a reduced-motion preference: the ring stops rather than
+   spinning forever behind someone who asked for less movement. */
+@media (prefers-reduced-motion: reduce) {
+  .brand-ring::before {
+    animation: none;
+  }
+}
+
+/* Word-by-word reveal for the hero paragraph.
+   Pure CSS on purpose. This was a JS-driven stagger, which meant the
+   text was invisible until a framer-motion animation cleared an inline
+   opacity/blur — so anything that stopped that animation running left
+   the hero's main description permanently blank. A CSS animation runs
+   without JavaScript, cannot be left half-applied, and switches itself
+   off for reduced-motion users. */
+@keyframes word-in {
+  from {
+    opacity: 0;
+    filter: blur(9px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+.word-reveal > span {
+  /* inline-block so the blur filter has a box to apply to, plus
+     `white-space: pre` because an inline-block COLLAPSES the trailing
+     space inside it — without this the paragraph renders as
+     "Webuildproduction software...". Each span holds one word and its
+     following space, so lines still break normally between spans. */
+  display: inline-block;
+  white-space: pre;
+  animation: word-in 0.45s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .word-reveal > span {
+    animation: none;
+  }
+}
+
+/* Logo entrance. CSS rather than JS so the header can never be left
+   logo-less when an animation does not run — the element's resting
+   state is visible, and the keyframe only adds the arrival. */
+@keyframes logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.logo-in {
+  animation: logo-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-in {
+    animation: none;
+  }
+}
+
+/* ── Hero AI widget (placeholder) ──────────────────────────────────
+   Small decorative animations for the dummy assistant panel. All CSS
+   so the card is alive without shipping another JS animation library,
+   and all disabled under reduced-motion. */
+@keyframes ai-bar {
+  0%,
+  100% {
+    transform: scaleY(0.28);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@keyframes ai-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+@keyframes ai-sheen {
+  from {
+    background-position: -180% 0;
+  }
+  to {
+    background-position: 180% 0;
+  }
+}
+.ai-bar {
+  transform-origin: center bottom;
+  animation: ai-bar 1.25s ease-in-out infinite;
+}
+.ai-dot {
+  animation: ai-dot 1.3s ease-in-out infinite;
+}
+.ai-sheen {
+  background: linear-gradient(
+    100deg,
+    hsl(var(--muted-foreground) / 0.18) 20%,
+    hsl(var(--primary) / 0.45) 42%,
+    hsl(var(--muted-foreground) / 0.18) 64%
+  );
+  background-size: 220% 100%;
+  animation: ai-sheen 2.6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-bar,
+  .ai-dot,
+  .ai-sheen {
+    animation: none;
+  }
+}
+
+/* ── Diagonal marquee band ─────────────────────────────────────────
+   The track holds TWO identical copies of the phrase list and slides
+   exactly -50%, so the second copy lands where the first began and the
+   loop is seamless — a single copy would snap back visibly. */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee-x 32s linear infinite;
+  will-change: transform;
+}
+.marquee-band:hover .marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}

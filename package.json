@@ -1,0 +1,86 @@
+{
+  "name": "goextend-web",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "postbuild": "pnpm run sitemap",
+    "start": "next start",
+    "lint": "eslint src/",
+    "sitemap": "node ./src/scripts/generateSitemap.mjs",
+    "analyze": "ANALYZE=true next build",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,mdx,css,json}\"",
+    "format:fix": "prettier --write \"src/**/*.{js,jsx,ts,tsx,mdx,css,json}\"",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "@radix-ui/react-label": "^2.1.12",
+    "@tabler/icons-react": "^3.45.0",
+    "@tailwindcss/forms": "^0.5.11",
+    "@vercel/analytics": "^2.0.1",
+    "clsx": "^2.1.1",
+    "formik": "^2.4.9",
+    "framer-motion": "^12.42.2",
+    "lottie-react": "^2.4.1",
+    "lru-cache": "^11.5.2",
+    "lucide-react": "^1.25.0",
+    "nanoid": "^6.0.0",
+    "next": "^16.3.8",
+    "next-seo": "^7.2.0",
+    "nodemailer": "^9.0.3",
+    "react": "^19.3.0",
+    "react-awesome-reveal": "^4.3.1",
+    "react-dom": "^19.3.0",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.7.0",
+    "react-intersection-observer": "^10.1.0",
+    "react-responsive-3d-carousel": "^2.1.5",
+    "sass": "^1.101.3",
+    "sharp": "^0.35.3",
+    "swiper": "^14.0.6",
+    "tailwind-merge": "^3.6.0",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.6",
+    "@next/bundle-analyzer": "^16.3.8",
+    "@svgr/webpack": "^8.1.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.1.1",
+    "@types/nodemailer": "^8.0.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.8",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "globby": "^16.2.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.1.1",
+    "mini-svg-data-uri": "^1.4.4",
+    "postcss": "^8.5.22",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "*.+(js|jsx|ts|tsx)": [
+      "eslint --fix"
+    ],
+    "*.+(js|jsx|ts|tsx|json|css|md|mdx)": [
+      "prettier --write"
+    ]
+  },
+  "description": "GoExtend Technologies — company website (goextendtech.com)"
+}
