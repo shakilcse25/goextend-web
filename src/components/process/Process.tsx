@@ -130,10 +130,15 @@ export default function Process() {
         style={pinned ? { height: `calc(100vh + ${distance}px)` } : undefined}
         className="relative"
       >
+        {/* `pt-32` reserves the strip the sticky navbar covers, and
+            `justify-center-safe` centres only while everything fits:
+            plain centring spills equally past both edges, which pushed
+            the heading up underneath the navbar. On a short screen the
+            spill now goes to the bottom instead. */}
         <div
           className={
             pinned
-              ? "sticky top-0 flex h-screen flex-col justify-center overflow-hidden"
+              ? "sticky top-0 flex h-screen flex-col justify-center-safe overflow-hidden pt-32 pb-6"
               : "overflow-hidden py-20 sm:py-24 md:py-32"
           }
         >
@@ -156,7 +161,7 @@ export default function Process() {
             </div>
           </div>
 
-          <div ref={viewport} className="relative mt-12 md:mt-16">
+          <div ref={viewport} className="relative mt-12 md:mt-[min(4rem,5vh)]">
             {/* Oversized outlined word, riding behind the steps. */}
             <span
               aria-hidden="true"
@@ -181,7 +186,13 @@ export default function Process() {
               {processSteps.map((step, i) => (
                 <article
                   key={step.step}
-                  style={{ "--lift": `${i * 34}px` } as React.CSSProperties}
+                  // The staircase step shrinks on short viewports so the
+                  // lowest card still fits under the pinned heading.
+                  style={
+                    {
+                      "--lift": `calc(${i} * min(34px, 3vh))`,
+                    } as React.CSSProperties
+                  }
                   className="border-border/60 bg-background hover:border-primary/60 w-[78vw] max-w-[420px] shrink-0 snap-start border p-7 transition-colors duration-300 sm:w-[44vw] sm:p-8 md:mt-[var(--lift)] lg:w-[25vw]"
                 >
                   <p className="text-primary font-grotesk text-2xl font-black tabular-nums sm:text-3xl">
